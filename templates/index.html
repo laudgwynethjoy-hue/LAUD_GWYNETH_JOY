@@ -98,6 +98,7 @@
 <div class="container">
 
     <h1>Student API Interface</h1>
+
     <p class="subtitle">
         Welcome to my Flask API Web Interface
     </p>
@@ -159,6 +160,42 @@
         </div>
     </div>
 
+    <!-- ACTIVITY 7: STUDENTS FROM DATABASE -->
+    <div class="card">
+        <h2>Students from Database</h2>
+
+        <button onclick="loadStudents()">
+            Load Students
+        </button>
+
+        <div id="studentList" class="result">
+            Click Load Students to display database records.
+        </div>
+    </div>
+
+    <!-- ACTIVITY 7: ADDITIONAL DATABASE API -->
+    <div class="card">
+        <h2>Students by Program</h2>
+
+        <label for="programInput">Select Program:</label>
+        <br>
+
+        <select id="programInput">
+            <option value="BSIT">BSIT</option>
+            <option value="BSOA">BSOA</option>
+        </select>
+
+        <br>
+
+        <button onclick="loadStudentsByProgram()">
+            Load Students by Program
+        </button>
+
+        <div id="programResult" class="result">
+            Select a program and click the button.
+        </div>
+    </div>
+
     <footer>
         Student API Interface | Flask API Activity 6
     </footer>
@@ -179,6 +216,7 @@ function loadStudent() {
             if (!response.ok) {
                 throw new Error('Unable to retrieve student data.');
             }
+
             return response.json();
         })
         .then(data => {
@@ -216,11 +254,14 @@ function sayHello() {
             if (!response.ok) {
                 throw new Error('Unable to retrieve greeting.');
             }
+
             return response.json();
         })
         .then(data => {
+
             greeting.innerHTML =
                 `<p class="message">${data.message}</p>`;
+
         })
         .catch(error => {
             greeting.innerHTML = error.message;
@@ -241,6 +282,7 @@ function loadSubject() {
             if (!response.ok) {
                 throw new Error('Unable to retrieve subject information.');
             }
+
             return response.json();
         })
         .then(data => {
@@ -255,6 +297,105 @@ function loadSubject() {
         })
         .catch(error => {
             result.innerHTML = error.message;
+        });
+}
+
+
+// =====================================
+// ACTIVITY 7: LOAD ALL STUDENTS
+// =====================================
+
+function loadStudents() {
+
+    const studentList = document.getElementById('studentList');
+
+    studentList.innerHTML = 'Loading students from database...';
+
+    fetch('/students')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Unable to retrieve student records.');
+            }
+
+            return response.json();
+        })
+        .then(data => {
+
+            let output = '';
+
+            data.forEach(student => {
+
+                output += `
+                    <p>
+                        <b>${student.student_id}</b> -
+                        ${student.name} |
+                        ${student.program} |
+                        Year ${student.year} |
+                        Section ${student.section}
+                    </p>
+                `;
+
+            });
+
+            studentList.innerHTML = output;
+
+        })
+        .catch(error => {
+
+            studentList.innerHTML =
+                '<p>Unable to retrieve student records.</p>';
+
+        });
+}
+
+
+// =====================================
+// ACTIVITY 7 ADDITIONAL TASK:
+// LOAD STUDENTS BY PROGRAM
+// =====================================
+
+function loadStudentsByProgram() {
+
+    const program = document.getElementById('programInput').value;
+
+    const result = document.getElementById('programResult');
+
+    result.innerHTML = 'Loading students...';
+
+    fetch('/students/program/' + encodeURIComponent(program))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Unable to retrieve students.');
+            }
+
+            return response.json();
+        })
+        .then(data => {
+
+            let output = '';
+
+            data.forEach(student => {
+
+                output += `
+                    <p>
+                        <b>Student ID:</b> ${student.student_id}<br>
+                        <b>Name:</b> ${student.name}<br>
+                        <b>Program:</b> ${student.program}<br>
+                        <b>Year:</b> ${student.year}<br>
+                        <b>Section:</b> ${student.section}
+                    </p>
+                    <hr>
+                `;
+
+            });
+
+            result.innerHTML = output;
+
+        })
+        .catch(error => {
+
+            result.innerHTML = error.message;
+
         });
 }
 
