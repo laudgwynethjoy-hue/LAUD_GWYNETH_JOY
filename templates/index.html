@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 750px;
+            max-width: 950px;
             margin: auto;
         }
 
@@ -43,7 +43,7 @@
             border: 1px solid #ddd;
         }
 
-        h2 {
+        h2, h3 {
             color: #234b75;
             margin-top: 0;
         }
@@ -55,20 +55,39 @@
             padding: 10px 16px;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 8px;
+            margin: 5px 4px 5px 0;
         }
 
         button:hover {
             background: #173653;
         }
 
+        button.danger {
+            background: #b83232;
+        }
+
+        button.danger:hover {
+            background: #8e2020;
+        }
+
+        button.secondary {
+            background: #687789;
+        }
+
         input, select {
             padding: 10px;
             width: 100%;
-            max-width: 350px;
+            max-width: 450px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            margin-top: 8px;
+            margin: 7px 0 12px;
+            display: block;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 5px;
         }
 
         .result {
@@ -77,6 +96,7 @@
             background: #f4f7fb;
             border-radius: 5px;
             line-height: 1.8;
+            overflow-x: auto;
         }
 
         .message {
@@ -84,11 +104,102 @@
             font-weight: bold;
         }
 
+        .status {
+            margin-top: 12px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #237a43;
+        }
+
+        .error {
+            color: #b83232;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 650px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #234b75;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f4f7fb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0 18px;
+        }
+
+        .form-grid input,
+        .form-grid select {
+            max-width: none;
+        }
+
+        .section-label {
+            display: inline-block;
+            background: #e8f0f8;
+            color: #234b75;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .readonly-label {
+            color: #237a43;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .detail-box {
+            background: #f4f7fb;
+            border-left: 4px solid #234b75;
+            padding: 15px;
+            margin-top: 15px;
+            line-height: 1.8;
+        }
+
         footer {
             text-align: center;
             color: #777;
             font-size: 13px;
             margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 18px 10px;
+            }
+
+            .card {
+                padding: 16px;
+            }
         }
     </style>
 </head>
@@ -103,7 +214,11 @@
         Welcome to my Flask API Web Interface
     </p>
 
-    <!-- STUDENT INFORMATION -->
+
+    <!-- =====================================
+         ACTIVITY 6: STUDENT INFORMATION
+    ====================================== -->
+
     <div class="card">
         <h2>Student Information</h2>
 
@@ -116,17 +231,21 @@
         </div>
     </div>
 
-    <!-- GREETING API -->
+
+    <!-- =====================================
+         ACTIVITY 6: GREETING API
+    ====================================== -->
+
     <div class="card">
         <h2>Greeting API</h2>
+
+        <label for="nameInput">Enter your first name:</label>
 
         <input
             type="text"
             id="nameInput"
             placeholder="Enter your first name"
         >
-
-        <br>
 
         <button onclick="sayHello()">
             Say Hello
@@ -137,19 +256,20 @@
         </div>
     </div>
 
-    <!-- CUSTOM SUBJECT API -->
+
+    <!-- =====================================
+         ACTIVITY 6: SUBJECT API
+    ====================================== -->
+
     <div class="card">
         <h2>Subject Information API</h2>
 
         <label for="subjectCode">Select Subject Code:</label>
-        <br>
 
         <select id="subjectCode">
             <option value="IT1101">IT1101</option>
             <option value="CC102">CC102</option>
         </select>
-
-        <br>
 
         <button onclick="loadSubject()">
             Load Subject Information
@@ -160,7 +280,11 @@
         </div>
     </div>
 
-    <!-- ACTIVITY 7: STUDENTS FROM DATABASE -->
+
+    <!-- =====================================
+         ACTIVITY 7: DATABASE RECORDS
+    ====================================== -->
+
     <div class="card">
         <h2>Students from Database</h2>
 
@@ -173,19 +297,20 @@
         </div>
     </div>
 
-    <!-- ACTIVITY 7: ADDITIONAL DATABASE API -->
+
+    <!-- =====================================
+         ACTIVITY 7: STUDENTS BY PROGRAM
+    ====================================== -->
+
     <div class="card">
         <h2>Students by Program</h2>
 
         <label for="programInput">Select Program:</label>
-        <br>
 
         <select id="programInput">
             <option value="BSIT">BSIT</option>
             <option value="BSOA">BSOA</option>
         </select>
-
-        <br>
 
         <button onclick="loadStudentsByProgram()">
             Load Students by Program
@@ -196,208 +321,865 @@
         </div>
     </div>
 
+
+    <!-- =====================================
+         ACTIVITY 8: CRUD FORM
+    ====================================== -->
+
+    <div class="card">
+        <h2>Student Record Management</h2>
+
+        <span class="section-label">CREATE / UPDATE</span>
+
+        <p>
+            Add a new student record or select an existing record
+            from My Records to edit it.
+        </p>
+
+        <form id="studentForm">
+
+            <input
+                type="hidden"
+                id="databaseId"
+            >
+
+            <div class="form-grid">
+
+                <div>
+                    <label for="studentId">Student ID</label>
+                    <input
+                        type="text"
+                        id="studentId"
+                        placeholder="Example: 2026-00151"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="studentName">Name</label>
+                    <input
+                        type="text"
+                        id="studentName"
+                        placeholder="Enter full name"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="studentProgram">Program</label>
+                    <select id="studentProgram" required>
+                        <option value="">Select Program</option>
+                        <option value="BSIT">BSIT</option>
+                        <option value="BSOA">BSOA</option>
+                        <option value="BSHM">BSHM</option>
+                        <option value="BSA">BSA</option>
+                        <option value="BSED">BSED</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="studentYear">Year</label>
+                    <select id="studentYear" required>
+                        <option value="">Select Year</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                        <option value="5">5th Year</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="studentSection">Section</label>
+                    <input
+                        type="text"
+                        id="studentSection"
+                        placeholder="Example: A"
+                        required
+                    >
+                </div>
+
+            </div>
+
+            <button type="submit" id="saveButton">
+                Add Student
+            </button>
+
+            <button
+                type="button"
+                class="secondary"
+                onclick="clearStudentForm()"
+            >
+                Clear Form
+            </button>
+
+            <p id="formMessage" class="status"></p>
+
+        </form>
+    </div>
+
+
+    <!-- =====================================
+         ACTIVITY 8: MY RECORDS
+    ====================================== -->
+
+    <div class="card">
+        <h2>My Records</h2>
+
+        <span class="section-label">MY DATABASE</span>
+
+        <p>
+            These are the student records stored in your own SQLite database.
+        </p>
+
+        <label for="searchInput">Search Student Records:</label>
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by student ID, name, or program"
+            oninput="searchMyRecords()"
+        >
+
+        <button onclick="loadMyRecords()">
+            Refresh My Records
+        </button>
+
+        <div id="myRecords" class="result">
+            Loading your records...
+        </div>
+
+        <div id="myStudentDetails"></div>
+    </div>
+
+
+    <!-- =====================================
+         ACTIVITY 8: CLASSMATE'S RECORDS
+    ====================================== -->
+
+    <div class="card">
+        <h2>Classmate's Records</h2>
+
+        <span class="section-label">EXTERNAL API</span>
+
+        <p>
+            Enter your classmate's deployed API URL below to retrieve
+            their student records.
+        </p>
+
+        <label for="classmateApiUrl">
+            Classmate's API URL:
+        </label>
+
+        <input
+            type="url"
+            id="classmateApiUrl"
+            placeholder="https://your-classmate.onrender.com/students"
+            autocomplete="url"
+        >
+
+        <button onclick="loadClassmateRecords()">
+            Load Classmate Records
+        </button>
+
+        <p id="classmateMessage" class="status"></p>
+
+        <div id="classmateRecords" class="result">
+            Enter an API URL and click Load Classmate Records.
+        </div>
+
+        <div id="classmateStudentDetails"></div>
+    </div>
+
+
     <footer>
-        Student API Interface | Flask API Activity 6
+        Student API Interface | Flask API Activities 6, 7 and 8
     </footer>
 
 </div>
 
+
 <script>
 
-// LOAD STUDENT INFORMATION
+// =====================================
+// HELPER: ESCAPE HTML TEXT
+// =====================================
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function(character) {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        };
+
+        return entities[character];
+    });
+}
+
+
+// =====================================
+// ACTIVITY 6: LOAD STUDENT INFORMATION
+// =====================================
+
 function loadStudent() {
+    const result = document.getElementById("result");
 
-    const result = document.getElementById('result');
+    result.innerHTML = "Loading student information...";
 
-    result.innerHTML = 'Loading student information...';
-
-    fetch('/student')
+    fetch("/student")
         .then(response => {
             if (!response.ok) {
-                throw new Error('Unable to retrieve student data.');
+                throw new Error("Unable to retrieve student data.");
             }
 
             return response.json();
         })
         .then(data => {
-
             result.innerHTML = `
-                <p><b>Student ID:</b> ${data.student_id}</p>
-                <p><b>Name:</b> ${data.name}</p>
-                <p><b>Program:</b> ${data.program}</p>
-                <p><b>Year:</b> ${data.year}</p>
-                <p><b>Section:</b> ${data.section}</p>
+                <p><b>Student ID:</b> ${escapeHTML(data.student_id)}</p>
+                <p><b>Name:</b> ${escapeHTML(data.name)}</p>
+                <p><b>Program:</b> ${escapeHTML(data.program)}</p>
+                <p><b>Year:</b> ${escapeHTML(data.year)}</p>
+                <p><b>Section:</b> ${escapeHTML(data.section)}</p>
             `;
-
         })
         .catch(error => {
-            result.innerHTML = error.message;
+            result.textContent = error.message;
         });
 }
 
 
-// GREETING API
+// =====================================
+// ACTIVITY 6: GREETING API
+// =====================================
+
 function sayHello() {
+    const name = document.getElementById("nameInput").value.trim();
+    const greeting = document.getElementById("greeting");
 
-    const name = document.getElementById('nameInput').value.trim();
-    const greeting = document.getElementById('greeting');
-
-    if (name === '') {
-        greeting.innerHTML = 'Please enter your first name.';
+    if (!name) {
+        greeting.textContent = "Please enter your first name.";
         return;
     }
 
-    greeting.innerHTML = 'Loading greeting...';
+    greeting.textContent = "Loading greeting...";
 
-    fetch('/hello?name=' + encodeURIComponent(name))
+    fetch("/hello?name=" + encodeURIComponent(name))
         .then(response => {
             if (!response.ok) {
-                throw new Error('Unable to retrieve greeting.');
+                throw new Error("Unable to retrieve greeting.");
             }
 
             return response.json();
         })
         .then(data => {
-
             greeting.innerHTML =
-                `<p class="message">${data.message}</p>`;
-
+                `<p class="message">${escapeHTML(data.message)}</p>`;
         })
         .catch(error => {
-            greeting.innerHTML = error.message;
-        });
-}
-
-
-// CUSTOM SUBJECT API
-function loadSubject() {
-
-    const code = document.getElementById('subjectCode').value;
-    const result = document.getElementById('subjectResult');
-
-    result.innerHTML = 'Loading subject information...';
-
-    fetch('/subject?code=' + encodeURIComponent(code))
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Unable to retrieve subject information.');
-            }
-
-            return response.json();
-        })
-        .then(data => {
-
-            result.innerHTML = `
-                <p><b>Subject Code:</b> ${data.subject_code}</p>
-                <p><b>Subject Title:</b> ${data.title}</p>
-                <p><b>Semester:</b> ${data.semester}</p>
-                <p><b>Academic Year:</b> ${data.academic_year}</p>
-            `;
-
-        })
-        .catch(error => {
-            result.innerHTML = error.message;
+            greeting.textContent = error.message;
         });
 }
 
 
 // =====================================
-// ACTIVITY 7: LOAD ALL STUDENTS
+// ACTIVITY 6: SUBJECT API
+// =====================================
+
+function loadSubject() {
+    const code = document.getElementById("subjectCode").value;
+    const result = document.getElementById("subjectResult");
+
+    result.textContent = "Loading subject information...";
+
+    fetch("/subject?code=" + encodeURIComponent(code))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Unable to retrieve subject information.");
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            result.innerHTML = `
+                <p><b>Subject Code:</b> ${escapeHTML(data.subject_code)}</p>
+                <p><b>Subject Title:</b> ${escapeHTML(data.title)}</p>
+                <p><b>Semester:</b> ${escapeHTML(data.semester)}</p>
+                <p><b>Academic Year:</b> ${escapeHTML(data.academic_year)}</p>
+            `;
+        })
+        .catch(error => {
+            result.textContent = error.message;
+        });
+}
+
+
+// =====================================
+// ACTIVITY 7: LOAD ALL DATABASE STUDENTS
 // =====================================
 
 function loadStudents() {
+    const studentList = document.getElementById("studentList");
 
-    const studentList = document.getElementById('studentList');
+    studentList.textContent = "Loading students from database...";
 
-    studentList.innerHTML = 'Loading students from database...';
-
-    fetch('/students')
+    fetch("/students")
         .then(response => {
             if (!response.ok) {
-                throw new Error('Unable to retrieve student records.');
+                throw new Error("Unable to retrieve student records.");
             }
 
             return response.json();
         })
         .then(data => {
+            if (!data.length) {
+                studentList.textContent = "No student records found.";
+                return;
+            }
 
-            let output = '';
+            let output = `
+                <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Name</th>
+                        <th>Program</th>
+                        <th>Year</th>
+                        <th>Section</th>
+                    </tr>
+            `;
 
             data.forEach(student => {
-
                 output += `
-                    <p>
-                        <b>${student.student_id}</b> -
-                        ${student.name} |
-                        ${student.program} |
-                        Year ${student.year} |
-                        Section ${student.section}
-                    </p>
+                    <tr>
+                        <td>${escapeHTML(student.student_id)}</td>
+                        <td>${escapeHTML(student.name)}</td>
+                        <td>${escapeHTML(student.program)}</td>
+                        <td>${escapeHTML(student.year)}</td>
+                        <td>${escapeHTML(student.section)}</td>
+                    </tr>
                 `;
-
             });
 
+            output += "</table></div>";
             studentList.innerHTML = output;
-
         })
         .catch(error => {
-
-            studentList.innerHTML =
-                '<p>Unable to retrieve student records.</p>';
-
+            studentList.textContent = error.message;
         });
 }
 
 
 // =====================================
-// ACTIVITY 7 ADDITIONAL TASK:
-// LOAD STUDENTS BY PROGRAM
+// ACTIVITY 7: STUDENTS BY PROGRAM
 // =====================================
 
 function loadStudentsByProgram() {
+    const program = document.getElementById("programInput").value;
+    const result = document.getElementById("programResult");
 
-    const program = document.getElementById('programInput').value;
+    result.textContent = "Loading students...";
 
-    const result = document.getElementById('programResult');
-
-    result.innerHTML = 'Loading students...';
-
-    fetch('/students/program/' + encodeURIComponent(program))
+    fetch("/students/program/" + encodeURIComponent(program))
         .then(response => {
             if (!response.ok) {
-                throw new Error('Unable to retrieve students.');
+                throw new Error("Unable to retrieve students.");
             }
 
             return response.json();
         })
         .then(data => {
-
-            let output = '';
+            let output = "";
 
             data.forEach(student => {
-
                 output += `
-                    <p>
-                        <b>Student ID:</b> ${student.student_id}<br>
-                        <b>Name:</b> ${student.name}<br>
-                        <b>Program:</b> ${student.program}<br>
-                        <b>Year:</b> ${student.year}<br>
-                        <b>Section:</b> ${student.section}
-                    </p>
-                    <hr>
+                    <div class="detail-box">
+                        <b>Student ID:</b> ${escapeHTML(student.student_id)}<br>
+                        <b>Name:</b> ${escapeHTML(student.name)}<br>
+                        <b>Program:</b> ${escapeHTML(student.program)}<br>
+                        <b>Year:</b> ${escapeHTML(student.year)}<br>
+                        <b>Section:</b> ${escapeHTML(student.section)}
+                    </div>
                 `;
-
             });
 
             result.innerHTML = output;
-
         })
         .catch(error => {
-
-            result.innerHTML = error.message;
-
+            result.textContent = error.message;
         });
 }
+
+
+// =====================================
+// ACTIVITY 8: CRUD FORM SUBMISSION
+// =====================================
+
+document.getElementById("studentForm").addEventListener(
+    "submit",
+    async function(event) {
+        event.preventDefault();
+
+        const databaseId =
+            document.getElementById("databaseId").value;
+
+        const student = {
+            student_id: document.getElementById("studentId").value.trim(),
+            name: document.getElementById("studentName").value.trim(),
+            program: document.getElementById("studentProgram").value,
+            year: document.getElementById("studentYear").value,
+            section: document.getElementById("studentSection").value.trim()
+        };
+
+        const message = document.getElementById("formMessage");
+        const saveButton = document.getElementById("saveButton");
+
+        const isEditing = Boolean(databaseId);
+
+        const url = isEditing
+            ? `/api/students/${databaseId}`
+            : "/api/students";
+
+        const method = isEditing ? "PUT" : "POST";
+
+        message.textContent = "Saving student record...";
+        message.className = "status";
+
+        saveButton.disabled = true;
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(student)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Unable to save student.");
+            }
+
+            message.textContent = data.message;
+            message.className = "status success";
+
+            clearStudentForm();
+            await loadMyRecords();
+
+            // Refresh Activity 7's database display too.
+            loadStudents();
+
+        } catch (error) {
+            message.textContent = error.message;
+            message.className = "status error";
+        } finally {
+            saveButton.disabled = false;
+        }
+    }
+);
+
+
+// =====================================
+// ACTIVITY 8: LOAD MY RECORDS
+// =====================================
+
+let myStudentData = [];
+
+async function loadMyRecords() {
+    const container = document.getElementById("myRecords");
+
+    container.textContent = "Loading your records...";
+
+    try {
+        const response = await fetch("/api/students");
+
+        if (!response.ok) {
+            throw new Error("Unable to load your records.");
+        }
+
+        myStudentData = await response.json();
+
+        displayMyRecords(myStudentData);
+
+    } catch (error) {
+        container.textContent = error.message;
+    }
+}
+
+
+// =====================================
+// ACTIVITY 8: DISPLAY MY RECORDS
+// =====================================
+
+function displayMyRecords(records) {
+    const container = document.getElementById("myRecords");
+
+    if (!records.length) {
+        container.textContent = "No student records found.";
+        return;
+    }
+
+    let output = `
+        <div class="table-wrapper">
+        <table>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Program</th>
+                <th>Year</th>
+                <th>Section</th>
+                <th>Actions</th>
+            </tr>
+    `;
+
+    records.forEach(student => {
+        output += `
+            <tr>
+                <td>${escapeHTML(student.student_id)}</td>
+                <td>${escapeHTML(student.name)}</td>
+                <td>${escapeHTML(student.program)}</td>
+                <td>${escapeHTML(student.year)}</td>
+                <td>${escapeHTML(student.section)}</td>
+                <td>
+                    <button onclick="viewMyStudent(${Number(student.id)})">
+                        View
+                    </button>
+
+                    <button onclick="editMyStudent(${Number(student.id)})">
+                        Edit
+                    </button>
+
+                    <button
+                        class="danger"
+                        onclick="deleteMyStudent(${Number(student.id)})"
+                    >
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    output += "</table></div>";
+
+    container.innerHTML = output;
+}
+
+
+// =====================================
+// ACTIVITY 8: SEARCH MY RECORDS
+// =====================================
+
+function searchMyRecords() {
+    const search = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const filtered = myStudentData.filter(student => {
+        return (
+            String(student.student_id).toLowerCase().includes(search) ||
+            String(student.name).toLowerCase().includes(search) ||
+            String(student.program).toLowerCase().includes(search)
+        );
+    });
+
+    displayMyRecords(filtered);
+}
+
+
+// =====================================
+// ACTIVITY 8: VIEW MY STUDENT DETAILS
+// =====================================
+
+async function viewMyStudent(id) {
+    const details = document.getElementById("myStudentDetails");
+
+    details.innerHTML = "Loading student details...";
+
+    try {
+        const response = await fetch(`/api/students/${id}`);
+        const student = await response.json();
+
+        if (!response.ok) {
+            throw new Error(student.error || "Student not found.");
+        }
+
+        details.innerHTML = `
+            <div class="detail-box">
+                <h3>My Student Details</h3>
+                <p><b>Database ID:</b> ${escapeHTML(student.id)}</p>
+                <p><b>Student ID:</b> ${escapeHTML(student.student_id)}</p>
+                <p><b>Name:</b> ${escapeHTML(student.name)}</p>
+                <p><b>Program:</b> ${escapeHTML(student.program)}</p>
+                <p><b>Year:</b> ${escapeHTML(student.year)}</p>
+                <p><b>Section:</b> ${escapeHTML(student.section)}</p>
+            </div>
+        `;
+
+    } catch (error) {
+        details.textContent = error.message;
+    }
+}
+
+
+// =====================================
+// ACTIVITY 8: EDIT MY STUDENT
+// =====================================
+
+async function editMyStudent(id) {
+    try {
+        const response = await fetch(`/api/students/${id}`);
+        const student = await response.json();
+
+        if (!response.ok) {
+            throw new Error(student.error || "Student not found.");
+        }
+
+        document.getElementById("databaseId").value = student.id;
+        document.getElementById("studentId").value = student.student_id;
+        document.getElementById("studentName").value = student.name;
+        document.getElementById("studentProgram").value = student.program;
+        document.getElementById("studentYear").value = student.year;
+        document.getElementById("studentSection").value = student.section;
+
+        document.getElementById("saveButton").textContent =
+            "Update Student";
+
+        document.getElementById("formMessage").textContent =
+            "Editing selected student record.";
+
+        document.getElementById("formMessage").className =
+            "status";
+
+        document.getElementById("studentForm").scrollIntoView({
+            behavior: "smooth"
+        });
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+
+// =====================================
+// ACTIVITY 8: DELETE MY STUDENT
+// =====================================
+
+async function deleteMyStudent(id) {
+    const confirmed = confirm(
+        "Are you sure you want to delete this student record?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/students/${id}`, {
+            method: "DELETE"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Unable to delete student.");
+        }
+
+        alert(data.message);
+
+        document.getElementById("myStudentDetails").innerHTML = "";
+
+        await loadMyRecords();
+        loadStudents();
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+
+// =====================================
+// ACTIVITY 8: CLEAR CRUD FORM
+// =====================================
+
+function clearStudentForm() {
+    document.getElementById("studentForm").reset();
+
+    document.getElementById("databaseId").value = "";
+
+    document.getElementById("saveButton").textContent =
+        "Add Student";
+}
+
+
+// =====================================
+// ACTIVITY 8: CLASSMATE RECORDS
+// ENTER API URL THROUGH THE UI
+// =====================================
+
+let classmateStudentData = [];
+
+async function loadClassmateRecords() {
+    const apiUrl = document
+        .getElementById("classmateApiUrl")
+        .value
+        .trim();
+
+    const message = document.getElementById("classmateMessage");
+    const container = document.getElementById("classmateRecords");
+
+    document.getElementById("classmateStudentDetails").innerHTML = "";
+
+    if (!apiUrl) {
+        message.textContent = "Please enter your classmate's API URL.";
+        message.className = "status error";
+        return;
+    }
+
+    message.textContent = "Connecting to classmate API...";
+    message.className = "status";
+
+    container.textContent = "Loading classmate records...";
+
+    try {
+        const response = await fetch(
+            "/api/classmate-students?url=" + encodeURIComponent(apiUrl)
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Unable to retrieve classmate records.");
+        }
+
+        classmateStudentData = Array.isArray(data) ? data : [];
+
+        message.textContent =
+            `Successfully retrieved ${classmateStudentData.length} classmate record(s).`;
+
+        message.className = "status success";
+
+        displayClassmateRecords(classmateStudentData);
+
+    } catch (error) {
+        classmateStudentData = [];
+
+        message.textContent = error.message;
+        message.className = "status error";
+
+        container.textContent = "No classmate records were loaded.";
+    }
+}
+
+
+// =====================================
+// ACTIVITY 8: DISPLAY CLASSMATE RECORDS
+// =====================================
+
+function displayClassmateRecords(records) {
+    const container = document.getElementById("classmateRecords");
+
+    if (!records.length) {
+        container.textContent = "No classmate records found.";
+        return;
+    }
+
+    let output = `
+        <p class="readonly-label">
+            READ-ONLY: These records belong to your classmate.
+        </p>
+
+        <div class="table-wrapper">
+        <table>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Program</th>
+                <th>Year</th>
+                <th>Section</th>
+                <th>Action</th>
+            </tr>
+    `;
+
+    records.forEach((student, index) => {
+        output += `
+            <tr>
+                <td>${escapeHTML(student.student_id ?? student.id ?? "")}</td>
+                <td>${escapeHTML(student.name ?? "")}</td>
+                <td>${escapeHTML(student.program ?? "")}</td>
+                <td>${escapeHTML(student.year ?? "")}</td>
+                <td>${escapeHTML(student.section ?? "")}</td>
+                <td>
+                    <button onclick="viewClassmateStudent(${index})">
+                        View Details
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    output += "</table></div>";
+
+    container.innerHTML = output;
+}
+
+
+// =====================================
+// ACTIVITY 8 ADDITIONAL TASK:
+// VIEW SELECTED CLASSMATE RECORD
+// =====================================
+
+function viewClassmateStudent(index) {
+    const student = classmateStudentData[index];
+
+    if (!student) {
+        return;
+    }
+
+    const details =
+        document.getElementById("classmateStudentDetails");
+
+    details.innerHTML = `
+        <div class="detail-box">
+            <h3>Classmate Student Details</h3>
+            <p><b>Student ID:</b>
+                ${escapeHTML(student.student_id ?? student.id ?? "")}
+            </p>
+            <p><b>Name:</b>
+                ${escapeHTML(student.name ?? "")}
+            </p>
+            <p><b>Program:</b>
+                ${escapeHTML(student.program ?? "")}
+            </p>
+            <p><b>Year:</b>
+                ${escapeHTML(student.year ?? "")}
+            </p>
+            <p><b>Section:</b>
+                ${escapeHTML(student.section ?? "")}
+            </p>
+            <p class="readonly-label">
+                This is a read-only classmate record.
+            </p>
+        </div>
+    `;
+}
+
+
+// =====================================
+// LOAD RECORDS WHEN PAGE OPENS
+// =====================================
+
+document.addEventListener("DOMContentLoaded", function() {
+    loadMyRecords();
+    loadStudents();
+});
 
 </script>
 
