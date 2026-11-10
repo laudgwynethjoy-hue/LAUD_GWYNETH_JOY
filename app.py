@@ -1,21 +1,16 @@
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__)
 
-# =====================================
-# HOME ENDPOINT
-# =====================================
 
+# HOME PAGE
 @app.route('/')
 def home():
-    return "Welcome to my first API!"
+    return render_template('index.html')
 
 
-# =====================================
-# STUDENT ENDPOINT
-# =====================================
-
+# STUDENT API
 @app.route('/student')
 def get_student():
     return jsonify({
@@ -27,10 +22,7 @@ def get_student():
     })
 
 
-# =====================================
-# HELLO ENDPOINT
-# =====================================
-
+# GREETING API
 @app.route('/hello')
 def say_hello():
     name = request.args.get('name', 'Student')
@@ -40,10 +32,7 @@ def say_hello():
     })
 
 
-# =====================================
-# NEW ENDPOINT 1: MY SKILLS
-# =====================================
-
+# SKILLS API
 @app.route('/skills')
 def get_skills():
     return jsonify({
@@ -58,14 +47,10 @@ def get_skills():
     })
 
 
-# =====================================
-# NEW ENDPOINT 2: SUBJECT INFORMATION
-# =====================================
-
+# CUSTOM SUBJECT API
 @app.route('/subject')
 def get_subject():
-
-    subject_code = request.args.get('code', 'IT1101')
+    subject_code = request.args.get('code', 'IT1101').upper()
 
     subjects = {
         "IT1101": {
@@ -82,7 +67,7 @@ def get_subject():
         }
     }
 
-    subject = subjects.get(subject_code.upper())
+    subject = subjects.get(subject_code)
 
     if subject is None:
         return jsonify({
@@ -92,10 +77,6 @@ def get_subject():
 
     return jsonify(subject)
 
-
-# =====================================
-# RUN FLASK APPLICATION
-# =====================================
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

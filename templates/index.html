@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student API Interface</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px 15px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #234b75;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        h2 {
+            color: #234b75;
+            margin-top: 0;
+        }
+
+        button {
+            background: #234b75;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: #173653;
+        }
+
+        input, select {
+            padding: 10px;
+            width: 100%;
+            max-width: 350px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 8px;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f4f7fb;
+            border-radius: 5px;
+            line-height: 1.8;
+        }
+
+        .message {
+            color: #234b75;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            color: #777;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Student API Interface</h1>
+    <p class="subtitle">
+        Welcome to my Flask API Web Interface
+    </p>
+
+    <!-- STUDENT INFORMATION -->
+    <div class="card">
+        <h2>Student Information</h2>
+
+        <button onclick="loadStudent()">
+            Load Student Information
+        </button>
+
+        <div id="result" class="result">
+            Click the button to load student information.
+        </div>
+    </div>
+
+    <!-- GREETING API -->
+    <div class="card">
+        <h2>Greeting API</h2>
+
+        <input
+            type="text"
+            id="nameInput"
+            placeholder="Enter your first name"
+        >
+
+        <br>
+
+        <button onclick="sayHello()">
+            Say Hello
+        </button>
+
+        <div id="greeting" class="result">
+            Your greeting will appear here.
+        </div>
+    </div>
+
+    <!-- CUSTOM SUBJECT API -->
+    <div class="card">
+        <h2>Subject Information API</h2>
+
+        <label for="subjectCode">Select Subject Code:</label>
+        <br>
+
+        <select id="subjectCode">
+            <option value="IT1101">IT1101</option>
+            <option value="CC102">CC102</option>
+        </select>
+
+        <br>
+
+        <button onclick="loadSubject()">
+            Load Subject Information
+        </button>
+
+        <div id="subjectResult" class="result">
+            Select a subject code and click the button.
+        </div>
+    </div>
+
+    <footer>
+        Student API Interface | Flask API Activity 6
+    </footer>
+
+</div>
+
+<script>
+
+// LOAD STUDENT INFORMATION
+function loadStudent() {
+
+    const result = document.getElementById('result');
+
+    result.innerHTML = 'Loading student information...';
+
+    fetch('/student')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Unable to retrieve student data.');
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            result.innerHTML = `
+                <p><b>Student ID:</b> ${data.student_id}</p>
+                <p><b>Name:</b> ${data.name}</p>
+                <p><b>Program:</b> ${data.program}</p>
+                <p><b>Year:</b> ${data.year}</p>
+                <p><b>Section:</b> ${data.section}</p>
+            `;
+
+        })
+        .catch(error => {
+            result.innerHTML = error.message;
+        });
+}
+
+
+// GREETING API
+function sayHello() {
+
+    const name = document.getElementById('nameInput').value.trim();
+    const greeting = document.getElementById('greeting');
+
+    if (name === '') {
+        greeting.innerHTML = 'Please enter your first name.';
+        return;
+    }
+
+    greeting.innerHTML = 'Loading greeting...';
+
+    fetch('/hello?name=' + encodeURIComponent(name))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Unable to retrieve greeting.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            greeting.innerHTML =
+                `<p class="message">${data.message}</p>`;
+        })
+        .catch(error => {
+            greeting.innerHTML = error.message;
+        });
+}
+
+
+// CUSTOM SUBJECT API
+function loadSubject() {
+
+    const code = document.getElementById('subjectCode').value;
+    const result = document.getElementById('subjectResult');
+
+    result.innerHTML = 'Loading subject information...';
+
+    fetch('/subject?code=' + encodeURIComponent(code))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Unable to retrieve subject information.');
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            result.innerHTML = `
+                <p><b>Subject Code:</b> ${data.subject_code}</p>
+                <p><b>Subject Title:</b> ${data.title}</p>
+                <p><b>Semester:</b> ${data.semester}</p>
+                <p><b>Academic Year:</b> ${data.academic_year}</p>
+            `;
+
+        })
+        .catch(error => {
+            result.innerHTML = error.message;
+        });
+}
+
+</script>
+
+</body>
+</html>
