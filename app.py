@@ -60,7 +60,6 @@ def get_skills():
 
 # =====================================
 # NEW ENDPOINT 2: SUBJECT INFORMATION
-# Accepts input from the URL
 # =====================================
 
 @app.route('/subject')
