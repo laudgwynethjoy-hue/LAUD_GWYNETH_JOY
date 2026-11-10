@@ -173,6 +173,28 @@
             font-size: 13px;
         }
 
+        .source-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #e8f0f8;
+            color: #234b75;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .hint {
+            color: #687789;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
         .detail-box {
             background: #f4f7fb;
             border-left: 4px solid #234b75;
@@ -454,46 +476,44 @@
 
 
     <!-- =====================================
-         ACTIVITY 8: CLASSMATE'S RECORDS
+         ACTIVITY 9: PARTNER RECORDS
     ====================================== -->
 
     <div class="card">
-        <h2>Classmate's Records</h2>
-
-        <span class="section-label">EXTERNAL API</span>
-
-        <p>
-            Enter your classmate's deployed API URL below to retrieve
-            their student records.
-        </p>
-
-        <label for="classmateApiUrl">
-            Classmate's API URL:
-        </label>
-
-        <input
-            type="url"
-            id="classmateApiUrl"
-            placeholder="https://your-classmate.onrender.com/students"
-            autocomplete="url"
-        >
-
-        <button onclick="loadClassmateRecords()">
-            Load Classmate Records
-        </button>
-
+        <h2>Partner API Integration</h2>
+        <span class="section-label">SYSTEM-TO-SYSTEM CONNECTION</span>
+        <p>Enter your partner's GET endpoint to retrieve their records. The URL is entered here and is not fixed in the code.</p>
+        <label for="classmateApiUrl">Partner GET API URL:</label>
+        <input type="url" id="classmateApiUrl" placeholder="https://your-partner.onrender.com/students">
+        <button onclick="loadClassmateRecords()">Connect and Load Partner Records</button>
         <p id="classmateMessage" class="status"></p>
-
-        <div id="classmateRecords" class="result">
-            Enter an API URL and click Load Classmate Records.
-        </div>
-
+        <div id="classmateRecords" class="result">Enter the partner GET URL and click Connect.</div>
         <div id="classmateStudentDetails"></div>
+    </div>
+
+    <div class="card">
+        <h2>Send a Practice Record to Partner</h2>
+        <span class="section-label">OUTGOING API REQUEST</span>
+        <p class="hint">Ask your partner for their POST endpoint first. Enter the exact URL they confirm supports POST. Do not assume their GET endpoint accepts POST.</p>
+        <label for="partnerPostUrl">Partner POST API URL:</label>
+        <input type="url" id="partnerPostUrl" placeholder="https://your-partner.onrender.com/api/students">
+        <form id="sendPartnerForm">
+            <div class="form-grid">
+                <div><label for="outStudentId">Practice Student ID</label><input id="outStudentId" value="EXT-001" required></div>
+                <div><label for="outStudentName">Practice Name</label><input id="outStudentName" value="Sample Exchange Record" required></div>
+                <div><label for="outProgram">Program</label><select id="outProgram" required><option>BSIT</option><option>BSOA</option><option>BSHM</option><option>BSA</option><option>BSED</option></select></div>
+                <div><label for="outYear">Year</label><select id="outYear" required><option value="1">1st Year</option><option value="2">2nd Year</option><option value="3">3rd Year</option><option value="4">4th Year</option><option value="5">5th Year</option></select></div>
+                <div><label for="outSection">Section</label><input id="outSection" value="A" required></div>
+            </div>
+            <button type="submit" id="sendPartnerButton">Send Practice Record</button>
+        </form>
+        <p id="sendPartnerMessage" class="status"></p>
+        <div id="sendPartnerResult" class="result">The partner's response will appear here after sending.</div>
     </div>
 
 
     <footer>
-        Student API Interface | Flask API Activities 6, 7 and 8
+        Student API Interface | Flask API Activities 6, 7, 8 and 9
     </footer>
 
 </div>
@@ -833,6 +853,7 @@ function displayMyRecords(records) {
                 <th>Program</th>
                 <th>Year</th>
                 <th>Section</th>
+                <th>Source</th>
                 <th>Actions</th>
             </tr>
     `;
@@ -845,6 +866,7 @@ function displayMyRecords(records) {
                 <td>${escapeHTML(student.program)}</td>
                 <td>${escapeHTML(student.year)}</td>
                 <td>${escapeHTML(student.section)}</td>
+                <td><span class="source-tag">${escapeHTML(student.source || "Local")}</span></td>
                 <td>
                     <button onclick="viewMyStudent(${Number(student.id)})">
                         View
@@ -920,6 +942,7 @@ async function viewMyStudent(id) {
                 <p><b>Program:</b> ${escapeHTML(student.program)}</p>
                 <p><b>Year:</b> ${escapeHTML(student.year)}</p>
                 <p><b>Section:</b> ${escapeHTML(student.section)}</p>
+                <p><b>Source:</b> ${escapeHTML(student.source || "Local")}</p>
             </div>
         `;
 
@@ -1120,6 +1143,9 @@ function displayClassmateRecords(records) {
                     <button onclick="viewClassmateStudent(${index})">
                         View Details
                     </button>
+                    <button onclick="importClassmateStudent(${index})">
+                        Save to My Database
+                    </button>
                 </td>
             </tr>
         `;
@@ -1165,12 +1191,80 @@ function viewClassmateStudent(index) {
                 ${escapeHTML(student.section ?? "")}
             </p>
             <p class="readonly-label">
-                This is a read-only classmate record.
+                Preview only. Use Save to My Database to import this record.
             </p>
         </div>
     `;
 }
 
+
+
+async function importClassmateStudent(index) {
+    const student = classmateStudentData[index];
+    if (!student) return;
+    if (!confirm("Save this partner record into your own database?")) return;
+
+    try {
+        const response = await fetch("/import-student", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(student)
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Unable to import partner record.");
+        alert(data.message + " Source: " + data.source);
+        await loadMyRecords();
+        loadStudents();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+document.getElementById("sendPartnerForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const url = document.getElementById("partnerPostUrl").value.trim();
+    const message = document.getElementById("sendPartnerMessage");
+    const result = document.getElementById("sendPartnerResult");
+    const button = document.getElementById("sendPartnerButton");
+
+    const student = {
+        student_id: document.getElementById("outStudentId").value.trim(),
+        name: document.getElementById("outStudentName").value.trim(),
+        program: document.getElementById("outProgram").value,
+        year: Number(document.getElementById("outYear").value),
+        section: document.getElementById("outSection").value.trim()
+    };
+
+    if (!url) {
+        message.textContent = "Enter your partner's confirmed POST endpoint.";
+        message.className = "status error";
+        return;
+    }
+    if (!confirm("Send this practice record to the partner API now?")) return;
+
+    button.disabled = true;
+    message.textContent = "Sending practice record...";
+    message.className = "status";
+
+    try {
+        const response = await fetch("/api/send-to-classmate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({url, student})
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Partner API did not accept the record.");
+        message.textContent = data.message;
+        message.className = "status success";
+        result.textContent = JSON.stringify(data.partner_response, null, 2);
+    } catch (error) {
+        message.textContent = error.message;
+        message.className = "status error";
+        result.textContent = "No successful partner response was received.";
+    } finally {
+        button.disabled = false;
+    }
+});
 
 // =====================================
 // LOAD RECORDS WHEN PAGE OPENS
