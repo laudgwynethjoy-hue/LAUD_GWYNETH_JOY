@@ -19,6 +19,14 @@ DATABASE = "students.db"
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
+
+    # Activity 9: safely add the source column to an existing database.
+    columns = [row["name"] for row in conn.execute("PRAGMA table_info(students)").fetchall()]
+    if columns and "source" not in columns:
+        conn.execute("ALTER TABLE students ADD COLUMN source TEXT DEFAULT 'Local'")
+        conn.execute("UPDATE students SET source = 'Local' WHERE source IS NULL OR source = ''")
+        conn.commit()
+
     return conn
 
 
@@ -237,13 +245,15 @@ def api_add_student():
 
     conn = get_db_connection()
 
+    source = str(data.get("source", "External API")).strip() or "External API"
+
     cursor = conn.execute(
         """
         INSERT INTO students
-        (student_id, name, program, year, section)
-        VALUES (?, ?, ?, ?, ?)
+        (student_id, name, program, year, section, source)
+        VALUES (?, ?, ?, ?, ?, ?)
         """,
-        (student_id, name, program, year, section)
+        (student_id, name, program, year, section, source)
     )
 
     new_id = cursor.lastrowid
@@ -484,6 +494,113 @@ def get_classmate_students():
         return jsonify({
             "error": "The classmate API did not return valid JSON"
         }), 502
+
+
+
+
+# =====================================
+# ACTIVITY 9: IMPORT A CLASSMATE RECORD
+# POST /import-student
+# =====================================
+
+@app.route("/import-student", methods=["POST"])
+def import_student():
+    data = request.get_json(silent=True) or {}
+
+    student_id = str(data.get("student_id", data.get("id", ""))).strip()
+    name = str(data.get("name", "")).strip()
+    program = str(data.get("program", "")).strip()
+    section = str(data.get("section", "")).strip()
+
+    try:
+        year = int(data.get("year"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "The selected record has an invalid year."}), 400
+
+    if not all([student_id, name, program, section]) or not 1 <= year <= 6:
+        return jsonify({"error": "The selected record is missing required student details."}), 400
+
+    conn = get_db_connection()
+    cursor = conn.execute(
+        """
+        INSERT INTO students (student_id, name, program, year, section, source)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (student_id, name, program, year, section, "Classmate API")
+    )
+    new_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "message": "Classmate record imported successfully.",
+        "id": new_id,
+        "source": "Classmate API"
+    }), 201
+
+
+# =====================================
+# ACTIVITY 9: SEND A PRACTICE RECORD
+# POST /api/send-to-classmate
+# =====================================
+
+@app.route("/api/send-to-classmate", methods=["POST"])
+def send_to_classmate():
+    data = request.get_json(silent=True) or {}
+    api_url = str(data.get("url", "")).strip()
+    student = data.get("student", {})
+
+    if not api_url or len(api_url) > 2000 or not is_public_api_url(api_url):
+        return jsonify({"error": "Enter a valid public HTTPS partner POST endpoint."}), 400
+
+    if urlparse(api_url).scheme != "https":
+        return jsonify({"error": "For safety, partner POST URLs must use HTTPS."}), 400
+
+    required = ["student_id", "name", "program", "year", "section"]
+    if not isinstance(student, dict) or any(str(student.get(key, "")).strip() == "" for key in required):
+        return jsonify({"error": "Complete all practice student fields before sending."}), 400
+
+    payload = {
+        "student_id": str(student["student_id"]).strip(),
+        "name": str(student["name"]).strip(),
+        "program": str(student["program"]).strip(),
+        "year": int(student["year"]),
+        "section": str(student["section"]).strip(),
+        "source": "Partner API"
+    }
+
+    try:
+        response = requests.post(
+            api_url,
+            json=payload,
+            timeout=20,
+            allow_redirects=False,
+            headers={"Accept": "application/json"}
+        )
+        try:
+            partner_response = response.json()
+        except ValueError:
+            partner_response = {"response_text": response.text[:500]}
+
+        if not response.ok:
+            return jsonify({
+                "error": "Partner API rejected the record.",
+                "partner_status": response.status_code,
+                "partner_response": partner_response
+            }), 502
+
+        return jsonify({
+            "message": "Practice record sent to the partner API.",
+            "partner_status": response.status_code,
+            "partner_response": partner_response
+        }), 200
+
+    except requests.exceptions.Timeout:
+        return jsonify({"error": "The partner API took too long to respond."}), 504
+    except requests.exceptions.RequestException:
+        return jsonify({"error": "Unable to send the record. Check the partner POST URL."}), 502
+    except (TypeError, ValueError):
+        return jsonify({"error": "Year must be a valid number."}), 400
 
 
 # =====================================
